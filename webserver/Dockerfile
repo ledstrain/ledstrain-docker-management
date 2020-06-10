@@ -2,7 +2,8 @@ FROM php:7.3.18-apache
 
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite \
+    && a2enmod ssl
 
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
@@ -16,6 +17,9 @@ ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/mas
 RUN chmod uga+x /usr/local/bin/install-php-extensions && sync && \
     install-php-extensions gd curl dom json mbstring openssl tokenizer zip 
 
+COPY ./ssl.crt /etc/apache2/ssl/ssl.crt
+COPY ./ssl.key /etc/apache2/ssl/ssl.key
+COPY ./default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
 
 ARG DEV_SITE
 
