@@ -5,17 +5,17 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN a2enmod rewrite \
     && a2enmod ssl
 
-
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php composer-setup.php --install-dir /usr/local/bin --filename=composer \
-    && php -r "unlink('composer-setup.php');"
-
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
 ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
 
 RUN chmod uga+x /usr/local/bin/install-php-extensions && sync && \
     install-php-extensions gd curl dom json mbstring openssl tokenizer zip 
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php --install-dir /usr/local/bin --filename=composer \
+    && php -r "unlink('composer-setup.php');"
+
 
 COPY ./ssl.crt /etc/apache2/ssl/ssl.crt
 COPY ./ssl.key /etc/apache2/ssl/ssl.key

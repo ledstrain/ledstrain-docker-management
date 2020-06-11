@@ -16,10 +16,10 @@ start:
     echo Waiting for database server to come online.
     while [[ ! $(curl --silent {{containerDbHost}}:{{containerDbPort}}; echo $? | grep --quiet -E '23') ]]; do echo -n .; sleep 1; done
     echo All good! Loading database now..
-    cat $DB_FILE | docker container exec -i $DATABASE_CONTAINER mysql -u$MYSQL_USER -p"$MYSQL_PASSWORD" $MYSQL_DATABASE
+    cat $DB_FILE | docker container exec -i "$COMPOSE_PROJECT_NAME"_db_1 mysql -u$MYSQL_USER -p"$MYSQL_PASSWORD" $MYSQL_DATABASE
     echo All done! Open up $DEV_SITE
 enter:
-    docker container exec -it $WEBSERVER_CONTAINER bash
+    docker container exec -it "$COMPOSE_PROJECT_NAME"_web_1 bash
 stop:
     docker-compose down --volumes
 build:
