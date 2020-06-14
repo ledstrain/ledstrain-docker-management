@@ -9,9 +9,9 @@ start:
     sed -i 's/localhost/db/' {{webFiles}}/config.php # change database location docker db
     sed -i 's;'$PRODUCTION_SITE';'https://$DEV_SITE';' {{webFiles}}/config.php # Change url in config
     sed -ie '/%{HTTPS} off/,+5d' {{webFiles}}/public/.htaccess # Hack for removing http -> https redirect
-    sed -i 's/smtp.sendgrid.net/null/' $DB_FILE # Hack to prevent emails leaking while testing
+    sed -i 's/'${SMTP_HOST}'/null/' $DB_FILE # Hack to prevent emails leaking while testing
 
-    if [ ! -f "webserver/ssl.key" ]; then just load-ssl; fi
+    if [ ! -f "webserver/ssl.key" ]; then just setup-ssl; fi
 
     docker-compose up -d
 
@@ -29,11 +29,11 @@ build:
     docker-compose build
 logs:
     docker container logs -f ledstrainorg_web_1
-load-ssl:
+setup-ssl:
     #!/usr/bin/env bash
     echo generating a self-signed cert for ${DEV_SITE}
     openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj \
-        "/C=NA/ST=NA/L=NA/O=devflarum/CN=${DEV_SITE}" \
+        "/C=NA/ST=NA/L=NA/O=kulga/CN=${DEV_SITE}" \
         -keyout ./webserver/ssl.key -out ./webserver/ssl.crt
     chmod 644 ./webserver/ssl.*
     just build
