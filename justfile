@@ -12,11 +12,14 @@ start:
     sql_file=$(ls {{dbFiles}}/*.sql -Art | head -n1)
 
     if [ ! -f {{webFiles}}/config.php.original ]; then
-        cp {{webFiles}}/config.php {{webFiles}}/config.php.original
+        mv {{webFiles}}/config.php {{webFiles}}/config.php.original
+        # Change config to debug, adjust db and change site to dev
+        cat {{webFiles}}/config.php.original \
+            | sed "s:'debug' => false:'debug' => true:" \
+            | sed 's/localhost/db/' \
+            | sed 's;'$PRODUCTION_SITE';'https://$DEV_SITE';' \
+            > {{webFiles}}/config.php
     fi
-    sed -i "s:'debug' => false:'debug' => true:" {{webFiles}}/config.php # change config to debug: true
-    sed -i 's/localhost/db/' {{webFiles}}/config.php # change database location docker db
-    sed -i 's;'$PRODUCTION_SITE';'https://$DEV_SITE';' {{webFiles}}/config.php # Change url in config
 
     docker-compose up -d
 
