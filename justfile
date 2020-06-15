@@ -11,7 +11,9 @@ start:
     # Get most recent sql file from dbFiles
     sql_file=$(ls {{dbFiles}}/*.sql -Art | head -n1)
 
-    cp {{webFiles}}/config.php {{webFiles}}/config.php.original
+    if [ ! -f {{webFiles}}/config.php.original ]; then
+        cp {{webFiles}}/config.php {{webFiles}}/config.php.original
+    fi
     sed -i "s:'debug' => false:'debug' => true:" {{webFiles}}/config.php # change config to debug: true
     sed -i 's/localhost/db/' {{webFiles}}/config.php # change database location docker db
     sed -i 's;'$PRODUCTION_SITE';'https://$DEV_SITE';' {{webFiles}}/config.php # Change url in config
