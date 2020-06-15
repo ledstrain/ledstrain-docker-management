@@ -27,6 +27,7 @@ start:
     cat "$sql_file" \
         | sed 's/'${SMTP_HOST}'/null/' \
         | docker container exec -i "${COMPOSE_PROJECT_NAME}"_db_1 mysql -u$MYSQL_USER -p"$MYSQL_PASSWORD" $MYSQL_DATABASE
+    docker container exec -it "${COMPOSE_PROJECT_NAME}"_web_1 php flarum cache:clear
     echo All done! Open up https://"$DEV_SITE"
 enter:
     docker container exec -it "${COMPOSE_PROJECT_NAME}"_web_1 bash
