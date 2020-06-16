@@ -16,6 +16,9 @@ start:
         # Change config to debug, adjust db and change site to dev
         cat {{webFiles}}/config.php.original \
             | sed "s:'debug' => false:'debug' => true:" \
+            | sed -E "s:'database' => '.*?':'database' => '${MYSQL_DATABASE}':" \
+            | sed -E "s:'username' => '.*?':'username' => '${MYSQL_USER}':" \
+            | sed -E "s:'password' => '.*?':'password' => '${MYSQL_PASSWORD}':" \
             | sed 's/localhost/db/' \
             | sed 's;'$PRODUCTION_SITE';'https://$DEV_SITE';' \
             > {{webFiles}}/config.php
