@@ -1,6 +1,12 @@
 start:
     #!/usr/bin/env bash
 
+    if [ ! -f .env ]; then
+        tail -n +2 example.env > .env
+        echo "No .env file found! Defaults have been loaded. Running again should now work"
+        exit 1
+    fi
+
     # Get most recent sql file from dbFiles
     sql_file=$(ls ${DB_FILES}/*.sql -Art | head -n1)
 
