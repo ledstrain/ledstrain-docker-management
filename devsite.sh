@@ -16,11 +16,11 @@ start() {
             # Change config to debug, adjust db and change site to dev
             cat "${WEB_FILES}"/config.php.original \
                 | sed "s:'debug' => false:'debug' => true:" \
+                | sed 's/localhost/db/' \
                 | sed -E "s:'database' => '.*?':'database' => '${MYSQL_DATABASE}':" \
                 | sed -E "s:'username' => '.*?':'username' => '${MYSQL_USER}':" \
                 | sed -E "s:'password' => '.*?':'password' => '${MYSQL_PASSWORD}':" \
-                | sed 's/localhost/db/' \
-                | sed 's;'"$PRODUCTION_SITE"';'https://"$DEV_SITE"';' \
+                | sed -E "s;'url' => '.*?';'url' => 'https://${DEV_SITE}';" \
                 > "${WEB_FILES}"/config.php
         fi
 
@@ -82,6 +82,15 @@ case "$1" in
         logs
         ;;
     *)
+        echo ""
+        echo -e "\t${WEB_FILES} should contain the flarum site files."
+        echo -e "\t${DB_FILES} should contain the mysqldump of the database"
+        echo ""
+        echo -e "\t$0 start"
+        echo -e "\t$0 stop"
+        echo -e "\t$0 enter  # Enter web instance. Useful to install composer packages"
+        echo -e "\t$0 build  # Rebuild the web image"
+        echo -e "\t$0 logs   # Follow the web instance logs"
         exit 1
         ;;
 esac
