@@ -1,33 +1,26 @@
-containerDbHost := "127.0.0.1"
-containerDbPort := "9906"
-
-webFiles := "site"
-dbFiles := "sqlbin"
-
-
 start:
     #!/usr/bin/env bash
 
     # Get most recent sql file from dbFiles
-    sql_file=$(ls {{dbFiles}}/*.sql -Art | head -n1)
+    sql_file=$(ls ${DB_FILES}/*.sql -Art | head -n1)
 
-    if [ ! -f {{webFiles}}/config.php.original ]; then
-        mv {{webFiles}}/config.php {{webFiles}}/config.php.original
+    if [ ! -f ${WEB_FILES}/config.php.original ]; then
+        mv ${WEB_FILES}/config.php ${WEB_FILES}/config.php.original
         # Change config to debug, adjust db and change site to dev
-        cat {{webFiles}}/config.php.original \
+        cat ${WEB_FILES}/config.php.original \
             | sed "s:'debug' => false:'debug' => true:" \
             | sed -E "s:'database' => '.*?':'database' => '${MYSQL_DATABASE}':" \
             | sed -E "s:'username' => '.*?':'username' => '${MYSQL_USER}':" \
             | sed -E "s:'password' => '.*?':'password' => '${MYSQL_PASSWORD}':" \
             | sed 's/localhost/db/' \
             | sed 's;'$PRODUCTION_SITE';'https://$DEV_SITE';' \
-            > {{webFiles}}/config.php
+            > ${WEB_FILES}/config.php
     fi
 
     docker-compose up -d
 
     echo Waiting for database server to come online.
-    while [[ ! $(curl --silent {{containerDbHost}}:{{containerDbPort}}; echo $? | grep --quiet -E '23') ]]; do echo -n .; sleep 1; done
+    while [[ ! $(curl --silent ${CONTAINER_DB_HOST}:${CONTAINER_DB_PORT}; echo $? | grep --quiet -E '23') ]]; do echo -n .; sleep 1; done
     echo All good! Loading "$sql_file" now..
 
     # Load the most recently modified sql file in dbFiles
@@ -41,7 +34,7 @@ enter:
     docker container exec -it "${COMPOSE_PROJECT_NAME}"_web_1 bash
 stop:
     docker-compose down --volumes
-    mv {{webFiles}}/config.php.original {{webFiles}}/config.php 
+    mv ${WEB_FILES}/config.php.original ${WEB_FILES}/config.php 
 build:
     docker-compose build
 logs:
