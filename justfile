@@ -8,7 +8,7 @@ start:
     fi
 
     # Get most recent sql file from dbFiles
-    sql_file=$(ls ${DB_FILES}/*.sql -Art | head -n1)
+    sql_file=$(ls ${DB_FILES}/*.sql* -Art | tail -n1)
 
     if [ ! -f ${WEB_FILES}/config.php.original ]; then
         mv ${WEB_FILES}/config.php ${WEB_FILES}/config.php.original
@@ -32,7 +32,7 @@ start:
     # Load the most recently modified sql file in dbFiles
     # Modify email host to null to prevent accidental emails
     cat "$sql_file" \
-        | sed 's/'${SMTP_HOST}'/null/' \
+        | sed "s:'mail_host','${SMTP_HOST}':'mail_host','${RESET_MSG}':" \
         | docker container exec -i "${COMPOSE_PROJECT_NAME}"_db_1 mysql -u$MYSQL_USER -p"$MYSQL_PASSWORD" $MYSQL_DATABASE
     docker container exec -it "${COMPOSE_PROJECT_NAME}"_web_1 php flarum cache:clear
     echo All done! Open up https://"$DEV_SITE"
