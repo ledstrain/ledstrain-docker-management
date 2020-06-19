@@ -3,7 +3,9 @@ start:
 
     if [ ! -f .env ]; then
         tail -n +2 example.env > .env
-        echo "No .env file found! Defaults have been loaded. Running again should now work"
+        source .env
+        mkdir -p ${DB_FILES} ${WEB_FILES}
+        echo "No .env file found! Defaults have been loaded. Make sure ${DB_FILES} has a sql export of the forum and ${WEB_FILES} has the site files"
         exit 1
     fi
 
