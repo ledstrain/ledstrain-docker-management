@@ -41,6 +41,7 @@ start() {
         # Modify email host to null to prevent accidental emails
         cat "$sql_file" \
             | sed "s:'mail_host','${SMTP_HOST}':'mail_host','"${RESET_MSG}"':" \
+            | sed "s:'flarum-pusher.app_secret','${PUSHER_APP_SECRET}':'flarum-pusher.app_secret','${RESET_MSG}':" \
             | docker container exec -i "${COMPOSE_PROJECT_NAME}"_db_1 mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"
         docker container exec -it "${COMPOSE_PROJECT_NAME}"_web_1 php flarum cache:clear
         echo All done! Open up https://"$DEV_SITE"
