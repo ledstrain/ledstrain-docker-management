@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   db:
-    image: mariadb:10.3.23-bionic
+    image: mariadb:10.3
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
