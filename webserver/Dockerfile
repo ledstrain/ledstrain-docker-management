@@ -1,4 +1,4 @@
-FROM php:7.3.18-apache 
+FROM php:7.3-apache 
 
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 ENV DEBIAN_FRONTEND=noninteractive
