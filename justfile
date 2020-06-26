@@ -28,7 +28,8 @@ start:
     docker-compose up -d
 
     echo Waiting for database server to come online.
-    while [[ ! $(curl --silent ${CONTAINER_DB_HOST}:${CONTAINER_DB_PORT}; echo $? | grep --quiet -E '23') ]]; do echo -n .; sleep 1; done
+    docker exec -i "$COMPOSE_PROJECT_NAME"_db_1 bash -c \
+      "while ! mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} -e 'SELECT 1' &> /dev/null; do echo -n .; sleep 1; done"
     echo All good! Loading "$sql_file" now..
 
     # Load the most recently modified sql file in dbFiles
