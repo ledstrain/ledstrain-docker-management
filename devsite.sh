@@ -40,7 +40,16 @@ start() {
 
         # Load the most recently modified sql file in dbFiles
         # Modify email host to null to prevent accidental emails
-        cat "$sql_file" \
+        (
+            if [ ${sql_file: -3} == ".gz" ]; then
+                gzip -dc "$sql_file"
+            elif [ ${sql_file: -4} == ".sql" ]; then
+                cat "$sql_file"
+            else
+                echo "No valid sql file found"
+                exit 1
+            fi
+        ) \
             | sed "s:'mail_host','${SMTP_HOST}':'mail_host','"${RESET_MSG}"':" \
             | sed "s:'flarum-pusher.app_secret','${PUSHER_APP_SECRET}':'flarum-pusher.app_secret','${RESET_MSG}':" \
             | docker container exec -i "${COMPOSE_PROJECT_NAME}"_db_1 mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"
