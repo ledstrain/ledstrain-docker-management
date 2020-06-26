@@ -32,9 +32,11 @@ start() {
         fi
 
         docker-compose up -d
+        DB=$(docker inspect -f '{{ .Name }}' $(docker-compose ps -q db) | cut -c2-)
+        WEB=$(docker inspect -f '{{ .Name }}' $(docker-compose ps -q web) | cut -c2-)
 
         echo Waiting for database server to come online.
-        docker exec -i "$COMPOSE_PROJECT_NAME"_db_1 bash -c \
+        docker exec -i "$DB" bash -c \
           "while ! mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} -e 'SELECT 1' &> /dev/null; do echo -n .; sleep 1; done"
         echo All good! Loading "$sql_file" now..
 
@@ -52,15 +54,16 @@ start() {
         ) \
             | sed "s:'mail_host','${SMTP_HOST}':'mail_host','"${RESET_MSG}"':" \
             | sed "s:'flarum-pusher.app_secret','${PUSHER_APP_SECRET}':'flarum-pusher.app_secret','${RESET_MSG}':" \
-            | docker container exec -i "${COMPOSE_PROJECT_NAME}"_db_1 mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"
-        docker container exec -it "${COMPOSE_PROJECT_NAME}"_web_1 php flarum cache:clear
+            | docker container exec -i "$DB" mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"
+        docker container exec -it "$WEB" php flarum cache:clear
         echo All done! Open up https://"$DEV_SITE"
     )
 }
 enter() {
     (
         cd "${SCRIPT_DIR}"
-        docker container exec -it "${COMPOSE_PROJECT_NAME}"_web_1 bash
+        WEB=$(docker inspect -f '{{ .Name }}' $(docker-compose ps -q web) | cut -c2-)
+        docker container exec -it "$WEB" bash
     )
 }
 stop() {
@@ -79,7 +82,8 @@ build() {
 logs() {
     (
         cd "${SCRIPT_DIR}"
-        docker container logs -f "${COMPOSE_PROJECT_NAME}"_web_1
+        WEB=$(docker inspect -f '{{ .Name }}' $(docker-compose ps -q web) | cut -c2-)
+        docker container logs -f "$WEB"
     )
 }
 
