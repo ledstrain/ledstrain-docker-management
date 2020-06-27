@@ -23,7 +23,7 @@ start() {
             # Change config to debug, adjust db and change site to dev
             cat "${WEB_FILES}"/config.php.original \
                 | sed "s:'debug' => false:'debug' => true:" \
-                | sed 's/localhost/db/' \
+                | sed -E 's/(localhost|127.0.0.1)/db/' \
                 | sed -E "s:'database' => '.*?':'database' => '${MYSQL_DATABASE}':" \
                 | sed -E "s:'username' => '.*?':'username' => '${MYSQL_USER}':" \
                 | sed -E "s:'password' => '.*?':'password' => '${MYSQL_PASSWORD}':" \
