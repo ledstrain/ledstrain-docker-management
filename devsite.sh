@@ -15,7 +15,7 @@ start() {
             exit 1
         fi
 
-        if [ "$DISABLE_SSL" == "true" ]; then
+        if [ "$DISABLE_SSL" = true ]; then
             HTTP_PREFIX="http"
         else
             HTTP_PREFIX="https"
