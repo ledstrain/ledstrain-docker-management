@@ -15,7 +15,8 @@ services:
         context: ./webserver
         args:
           DEV_SITE: ${DEV_SITE}
-
+    environment:
+      DISABLE_SSL: ${DISABLE_SSL}
     depends_on:
       - db
     sysctls:

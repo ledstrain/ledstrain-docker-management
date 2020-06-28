@@ -9,6 +9,12 @@ start:
         exit 1
     fi
 
+    if [ "$DISABLE_SSL" == "true" ]; then
+        HTTP_PREFIX="http"
+    else
+        HTTP_PREFIX="https"
+    fi
+
     # Get most recent sql file from dbFiles
     sql_file=$(ls ${DB_FILES}/*.sql* -Art | tail -n1)
 
@@ -22,7 +28,7 @@ start:
             | sed -E "s:'database' => '.*?':'database' => '${MYSQL_DATABASE}':" \
             | sed -E "s:'username' => '.*?':'username' => '${MYSQL_USER}':" \
             | sed -E "s:'password' => '.*?':'password' => '${MYSQL_PASSWORD}':" \
-            | sed -E "s;'url' => '.*?';'url' => 'https://${DEV_SITE}';" \
+            | sed -E "s;'url' => '.*?';'url' => '${HTTP_PREFIX}://${DEV_SITE}';" \
             > ${WEB_FILES}/config.php
     fi
 
@@ -51,7 +57,7 @@ start:
         | sed "s:'flarum-pusher.app_secret','${PUSHER_APP_SECRET}':'flarum-pusher.app_secret','${RESET_MSG}':" \
         | docker container exec -i "$DB" mysql -u$MYSQL_USER -p"$MYSQL_PASSWORD" $MYSQL_DATABASE
     docker container exec -it "$WEB" php flarum cache:clear
-    echo All done! Open up https://"$DEV_SITE"
+    echo All done! Open up ${HTTP_PREFIX}://"$DEV_SITE"
 enter:
     WEB=$(docker inspect -f '{{ "{{" }} .Name {{ "}}" }}' $(docker-compose ps -q web) | cut -c2-)
     docker container exec -it "$WEB" bash
