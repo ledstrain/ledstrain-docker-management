@@ -24,7 +24,7 @@ start() {
             cat "${WEB_FILES}"/config.php.original \
                 | sed "s:'debug' => false:'debug' => true:" \
                 | sed '/port/d' \
-                | sed -E 's/(localhost|127.0.0.1)/db/' \
+                | sed -E "s;'host' => '.*?';'host' => 'db';" \
                 | sed -E "s:'database' => '.*?':'database' => '${MYSQL_DATABASE}':" \
                 | sed -E "s:'username' => '.*?':'username' => '${MYSQL_USER}':" \
                 | sed -E "s:'password' => '.*?':'password' => '${MYSQL_PASSWORD}':" \
