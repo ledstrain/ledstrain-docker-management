@@ -64,6 +64,27 @@ enter:
 stop:
     docker-compose down --volumes
     mv ${WEB_FILES}/config.php.original ${WEB_FILES}/config.php 
+push:
+    echo stub for pushing composer updates and installing to host server
+    echo This needs per server configuration. Exiting...
+    exit 0
+
+    # scp site/composer.json site/composer.lock user@yourserver:/forum/location/
+    # ssh user@yourserver "(cd /forum/location && composer install && php flarum migrate; php flarum cache:clear)"
+pull:                                                                           
+    #!/usr/bin/env bash
+    echo stub for pulling site files and database from host server
+    echo This needs per server configuration. Exiting...
+    exit 0
+
+    # if [ -f ${WEB_FILES}/config.php.original ]; then
+    #     just stop
+    # fi
+    # echo Began pulling..
+    # echo '*' ${WEB_FILES}
+    # rsync -a yourserver:/forum/location/ ${WEB_FILES}
+    # echo '*' database
+    # ssh user@yourserver "mysqldump hostdb -udbUser -p'dbPassword' | gzip -c" > ${DB_FILES}/sqlexport_$(date '+%F').sql.gz
 build:
     docker-compose build
 logs:
