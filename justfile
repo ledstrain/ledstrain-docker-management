@@ -59,6 +59,7 @@ start:
     docker container exec -it "$WEB" php flarum cache:clear
     echo All done! Open up ${HTTP_PREFIX}://"$DEV_SITE"
 enter:
+    #!/usr/bin/env bash
     WEB=$(docker inspect -f '{{ "{{" }} .Name {{ "}}" }}' $(docker-compose ps -q web) | cut -c2-)
     docker container exec -it "$WEB" bash
 stop:
@@ -88,5 +89,6 @@ pull:
 build:
     docker-compose build
 logs:
+    #!/usr/bin/env bash
     WEB=$(docker inspect -f '{{ "{{" }} .Name {{ "}}" }}' $(docker-compose ps -q web) | cut -c2-)
     docker container logs -f "$WEB"
