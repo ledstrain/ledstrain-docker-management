@@ -10,7 +10,7 @@ RUN a2enmod rewrite \
 RUN useradd --system --create-home --home-dir /home/webuser --shell /bin/bash \
         --gid root --groups sudo --uid 1000 webuser
 
-RUN apt-get update && apt-get install -y unzip \
+RUN apt-get update && apt-get install -y nodejs npm unzip \
     && rm -rf /var/lib/apt/lists/*
 
 ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
