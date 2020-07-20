@@ -8,6 +8,8 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - internal
     volumes:
       - ./sqlbin:/sqlbin
   web:
@@ -21,6 +23,8 @@ services:
       - db
     sysctls:
       - net.ipv4.ip_unprivileged_port_start=0
+    networks:
+      - internal
     ports:
       - "80:80"
       - "443:443"
@@ -28,3 +32,6 @@ services:
       - ./site:/var/www/html
     stdin_open: true
     tty: true
+
+networks:
+    internal:
